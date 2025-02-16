@@ -6,8 +6,9 @@ export default async function Home() {
   const trending = await fetch(`${process.env.TMDB_BASE_URL}/trending/movie/day?language=en-US&api_key=${process.env.TMDB_API_KEY}`)
   const trending_movie = await trending.json()
 
-  const recommended = await fetch(`${process.env.TMDB_BASE_URL}/movie/?top_rated/page=1&api_key=${process.env.TMDB_API_KEY}`)
+  const recommended = await fetch(`${process.env.TMDB_BASE_URL}/discover/movie?api_key=${process.env.TMDB_API_KEY}`)
   const recomended_movie = await recommended.json()
+  
 
   return (
     <main>
@@ -19,14 +20,18 @@ export default async function Home() {
           <Header>
             Trending
           </Header>
-          <MovieList movies={trending_movie.results} />
+          {
+            !trending_movie ? <h1>Film not found</h1> : <MovieList movies={trending_movie.results} />
+          }
       </section>
 
       <section id="recommended">
           <Header>
             Recommended
           </Header>
-          <MovieList movies={recomended_movie.results} />
+          {
+            !recomended_movie ? <h1>Film not found</h1> : <MovieList movies={recomended_movie.results} />
+          }
       </section>
     </main>
   );

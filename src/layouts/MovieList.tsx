@@ -9,6 +9,7 @@ import { Pagination, Navigation } from "swiper/modules";
 
 import Card from "@/components/Card";
 import React from "react";
+import Link from "next/link";
 
 type Movies = {
   backdrop_path: string;
@@ -41,7 +42,7 @@ const MovieList = ({ movies }: { movies: Movies }) => {
         {movies?.map((m) => {
           return (
             <SwiperSlide key={m.id}>
-              <div className="relative w-40 h-64 bg-black rounded-lg overflow-hidden shadow-lg mx-auto">
+              <div  className="relative w-40 h-64 bg-black rounded-lg overflow-hidden shadow-lg mx-auto">
                 <img
                   src={`https://image.tmdb.org/t/p/original${m.poster_path}`}
                   alt="Movie poster of a woman with curly hair surrounded by photographers"
@@ -54,10 +55,10 @@ const MovieList = ({ movies }: { movies: Movies }) => {
                 <div className="absolute top-2 right-2 bg-green-600 text-white text-xs px-1 rounded">
                   HD
                 </div>
-                <div className="absolute bottom-2 left-0 right-0 text-center text-white text-sm">
+                <Link href={`/movie-detail/${m.id}`} className="absolute bottom-2 left-0 right-0 text-center text-white text-sm">
                   <span className="block">{m.title}</span>
                   <span>{m.release_date}</span>
-                </div>
+                </Link>
               </div>
             </SwiperSlide>
           );
