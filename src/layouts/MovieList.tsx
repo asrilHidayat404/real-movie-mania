@@ -5,10 +5,9 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 
-import { Pagination, Navigation } from "swiper/modules";
+import { Navigation } from "swiper/modules";
 
-import Card from "@/components/Card";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 
 type Movies = {
@@ -30,34 +29,53 @@ type Movies = {
 }[];
 
 const MovieList = ({ movies }: { movies: Movies }) => {
+  const [windowState, setWindowState] = useState(5);
+  // console.log(window.innerWidth);
 
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowState(window.innerWidth < 500 ? 3 : 5);
+    };
+
+    handleResize(); // Set awal saat komponen pertama kali dimuat
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
   return (
     <main className="px-10">
       <Swiper
-        slidesPerView={6}
+        slidesPerView={windowState}
         navigation={true}
         pagination={{ clickable: true }}
         modules={[Navigation]}
       >
         {movies?.map((m) => {
           return (
-            <SwiperSlide key={m.id}>
-              <div  className="relative w-40 h-64 bg-black rounded-lg overflow-hidden shadow-lg mx-auto">
+            <SwiperSlide key={m.id} className="p-1">
+              <div className="relative w-40 lg:h-64 h-32 w-fit rounded-lg overflow-hidden shadow-lg mx-auto mx-1">
                 <img
                   src={`https://image.tmdb.org/t/p/original${m.poster_path}`}
                   alt="Movie poster of a woman with curly hair surrounded by photographers"
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute top-2 left-2 flex items-center text-yellow-400 text-sm">
-                  <img src="/star.png" className="2-5 h-5"/>
-                  <span className="ml-1">{m.vote_average}</span>
+                  <img src="/star.png" className="lg:w-5 lg:h-5 w-2 h-2" />
+                  <span className="ml-1 lg:text-lg sm:text-[8px]">
+                    {m.vote_average}
+                  </span>
                 </div>
-                <div className="absolute top-2 right-2 bg-green-600 text-white text-xs px-1 rounded">
+                <div className="absolute top-2 right-2 bg-green-600 text-white lg:text-lg sm:text-[8px] px-1 rounded">
                   HD
                 </div>
-                <Link href={`/movie-detail/${m.id}`} className="absolute bottom-2 left-0 right-0 text-center text-white text-sm">
-                  <span className="block">{m.title}</span>
-                  <span>{m.release_date}</span>
+                <Link
+                  href={`/movie-detail/${m.id}`}
+                  className="leading-0 absolute bottom-0 left-0 right-0 text-center text-white text-sm"
+                >
+                  <span className="block lg:text-lg text-[8px]">{m.title}</span>
+                  <span className="lg:text-lg sm:text-[8px]">
+                    {m.release_date}
+                  </span>
                 </Link>
               </div>
             </SwiperSlide>

@@ -32,12 +32,11 @@ const Navbar = () => {
       if (query.length < 3) {
         setResults([]);
         setLoading(false);
-        return
+        return;
       }
       const result = await getSearchMovie(query);
       if (result) {
         setResults(result.results);
-        
       }
       // setResults(data.results.slice(0, 5)); // Ambil hanya 5 hasil pertama
     } catch (error) {
@@ -55,8 +54,8 @@ const Navbar = () => {
   //   return () => clearTimeout(delay);
   // }, [search]);
 
-  console.log("results", results);
-  
+  // console.log("results", results);
+
   return (
     <div className="fixed bg-[rgba(0,0,0,.7)] text-white top-0 left-0 right-0 z-20 py-3 px-10 flex items-center gap-5">
       {/* Logo */}
@@ -89,6 +88,7 @@ const Navbar = () => {
           onChange={(e) => setSearch(e.target.value)}
           className="px-4 py-2 w-80 bg-gray-800 text-white rounded-full focus:outline-none"
         />
+        <i className="ph ph-magnifying-glass"></i>
         {/* Search Result Dropdown */}
         {search && (
           <div className="absolute bg-gray-900 text-white w-full mt-2 rounded-md max-h-60 overflow-y-auto shadow-lg">
@@ -98,7 +98,10 @@ const Navbar = () => {
               results.map((movie) => (
                 <Link
                   key={movie.id}
-                  href={`/search/${new URLSearchParams({title: movie.title, id: movie.id})}}`}
+                  href={`/search/${new URLSearchParams({
+                    title: movie.title,
+                    id: movie.id,
+                  })}}`}
                   className="block px-4 py-2 hover:bg-gray-700"
                 >
                   {movie.title}
