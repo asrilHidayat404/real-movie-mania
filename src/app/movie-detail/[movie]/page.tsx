@@ -1,4 +1,3 @@
-import getMovieDetail from "@/app/api/getMovieDetail";
 import getSearchMovie from "@/app/api/searchMovie";
 import { formatRuntime } from "@/utils/formatRuntime";
 import Releasedbj from "@/utils/releaseData";

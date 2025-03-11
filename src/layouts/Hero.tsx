@@ -1,5 +1,4 @@
 import SwiperComponents from "@/components/SwiperComponents";
-import axios from "axios";
 
 export default async function Hero() {
   const response = await fetch(

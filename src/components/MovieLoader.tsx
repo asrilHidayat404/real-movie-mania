@@ -3,7 +3,13 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 
-const MovieLoader = ({ movies, pageName }: { movies: any }) => {
+const MovieLoader = ({
+  movies,
+  pageName,
+}: {
+  movies: any;
+  pageName: string;
+}) => {
   const [movie, setMovies] = useState(movies.results);
   const [page, setPage] = useState(2); // Mulai dari halaman 2
   const [hasMore, setHasMore] = useState(true);
@@ -49,7 +55,7 @@ const MovieLoader = ({ movies, pageName }: { movies: any }) => {
       <div className="w-full flex flex-wrap gap-10 justify-center mt-10">
         {movie &&
           movie.length &&
-          movie.map((m) => {
+          movie.map((m: any) => {
             console.log(m);
 
             return (

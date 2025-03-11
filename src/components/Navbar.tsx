@@ -2,7 +2,7 @@
 import getSearchMovie from "@/app/api/searchMovie";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 type NavLinks = {
   label: string;

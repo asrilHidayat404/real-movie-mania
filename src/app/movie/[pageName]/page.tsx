@@ -1,8 +1,6 @@
 import Header from "@/components/Header";
 import MovieLoader from "@/components/MovieLoader";
-import Link from "next/link";
-import React, { lazy, Suspense } from "react";
-const ListMovie = lazy(() => import("@/layouts/MovieList"));
+import React, { Suspense } from "react";
 
 const page = async ({ params }: { params: Promise<{ pageName: string }> }) => {
   const { pageName } = await params;
@@ -25,7 +23,7 @@ const page = async ({ params }: { params: Promise<{ pageName: string }> }) => {
     }
   }
 
-  const movies = await fetchMovie(pageName, 1);
+  const movies = await fetchMovie(pageName);
   console.log(movies.results.length);
 
   return (
