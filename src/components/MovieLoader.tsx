@@ -3,14 +3,28 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 
+// Define a type for a single movie
+type Movie = {
+  id: number;
+  title: string;
+  poster_path: string;
+  vote_average: number;
+  release_date: string;
+};
+
+// Define a type for the movies object
+type Movies = {
+  results: Movie[];
+};
+
 const MovieLoader = ({
   movies,
   pageName,
 }: {
-  movies: any;
+  movies: Movies;
   pageName: string;
 }) => {
-  const [movie, setMovies] = useState(movies.results);
+  const [movie, setMovies] = useState<Movie[]>(movies.results);
   const [page, setPage] = useState(2); // Mulai dari halaman 2
   const [hasMore, setHasMore] = useState(true);
   console.log({ movie });
@@ -29,7 +43,7 @@ const MovieLoader = ({
     if (newMovies.length === 0) {
       setHasMore(false);
     } else {
-      setMovies((prev: []) => {
+      setMovies((prev: Movie[]) => {
         const allMovies = [...prev, ...newMovies.results];
 
         // 🔹 Hapus film yang duplikat berdasarkan ID
@@ -55,7 +69,7 @@ const MovieLoader = ({
       <div className="w-full flex flex-wrap gap-10 justify-center mt-10">
         {movie &&
           movie.length &&
-          movie.map((m: any) => {
+          movie.map((m: Movie) => {
             console.log(m);
 
             return (

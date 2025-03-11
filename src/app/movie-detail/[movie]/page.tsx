@@ -1,16 +1,10 @@
 import getSearchMovie from "@/app/api/searchMovie";
 import { formatRuntime } from "@/utils/formatRuntime";
-import Releasedbj from "@/utils/releaseData";
+import parseReleaseDate from "@/utils/releaseData";
 import Link from "next/link";
 import React from "react";
 
-interface PageProps {
-  params: {
-    movie: string;
-  };
-}
-
-const page = async ({ params }: PageProps) => {
+const page = async ({ params }: { params: Promise<{ movie: string }> }) => {
   const movieId = (await params).movie;
 
   const response = await fetch(
@@ -25,7 +19,7 @@ const page = async ({ params }: PageProps) => {
   );
   const movie = await response.json();
   console.log(movie);
-  const year = new Releasedbj(movie.release_date).result().year;
+  const releaseDate = parseReleaseDate(movie.release_date);
 
   return (
     <div
@@ -55,7 +49,7 @@ const page = async ({ params }: PageProps) => {
         <div className="md:ml-8 w-full md:w-3/4">
           <h1 className="text-3xl font-bold">{movie.original_title}</h1>
           <p className="text-gray-300">
-            {year} • {formatRuntime(movie.runtime)}
+            {releaseDate.year} • {formatRuntime(movie.runtime)}
           </p>
 
           {/* Ratings */}
@@ -102,38 +96,45 @@ const page = async ({ params }: PageProps) => {
 };
 
 const CustomersAlsoWatched = async () => {
-  const trending = await fetch(
-    `${process.env.TMDB_BASE_URL}/trending/movie/day?language=en-US&api_key=${process.env.TMDB_API_KEY}`
-  );
   const trending_movie = await getSearchMovie("sonic");
+  type results = {
+    id: string;
+    title: string;
+    release_date: string;
+    poster_path: string;
+    vote_average: string;
+  };
 
   return (
     <div className="p-6 md:p-12 z-10 relative bg-gray-800">
       <h2 className="text-2xl font-semibold mb-4">Customers Also Watched</h2>
       <div className="flex flex-wrap gap-4 ">
-        {trending_movie.results.map((m, index) => (
+        {trending_movie.results.map((m: results, index: number) => (
           <div
             key={index}
             className="relative w-40 lg:h-64 h-44 w-fit bg-black rounded-lg overflow-hidden shadow-lg mx-auto mx-1"
           >
-            <img
-              src={`https://image.tmdb.org/t/p/original${m.poster_path}`}
-              alt="Movie poster of a woman with curly hair surrounded by photographers"
-              className="w-full h-full object-cover"
-            />
+            {m?.poster_path && (
+              <img
+                src={`https://image.tmdb.org/t/p/original${m?.poster_path}`}
+                alt="Movie poster of a woman with curly hair surrounded by photographers"
+                className="w-full h-full object-cover"
+              />
+            )}
+
             <div className="absolute top-2 left-2 flex items-center text-yellow-400 text-sm">
               <img src="/star.png" className="2-5 h-5" />
-              <span className="ml-1">{m.vote_average}</span>
+              <span className="ml-1">{m?.vote_average}</span>
             </div>
             <div className="absolute top-2 right-2 bg-green-600 text-white text-xs px-1 rounded">
               HD
             </div>
             <Link
-              href={`/movie-detail/${m.id}`}
+              href={`/movie-detail/${m?.id}`}
               className="absolute bottom-2 left-0 right-0 text-center text-white text-sm"
             >
-              <span className="block">{m.title}</span>
-              <span>{m.release_date}</span>
+              <span className="block">{m?.title}</span>
+              <span>{m?.release_date}</span>
             </Link>
           </div>
         ))}
