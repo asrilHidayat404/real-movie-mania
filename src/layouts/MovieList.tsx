@@ -60,7 +60,11 @@ const MovieList = ({ movies }: { movies: Movies }) => {
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute top-2 left-2 flex items-center text-yellow-400 text-sm">
-                  <img src="/star.png" className="lg:w-5 lg:h-5 w-2 h-2" />
+                  <img
+                    src="/star.png"
+                    className="lg:w-5 lg:h-5 w-2 h-2"
+                    alt="..."
+                  />
                   <span className="ml-1 lg:text-lg sm:text-[8px]">
                     {m.vote_average}
                   </span>

@@ -52,12 +52,14 @@ const SwiperComponents = ({ movies }: { movies: Movies }) => {
                 }}
               >
                 <div className="description z-10 p-10 lg:w-2/3">
-                  <h1 className="font-bold lg:text-5xl text-2xl mb-2">{m.title}</h1>
+                  <h1 className="font-bold lg:text-5xl text-2xl mb-2">
+                    {m.title}
+                  </h1>
                   <div className="mb-2 flex items-center gap-x-5">
                     <span>{m.release_date}</span>
                     <span className="flex items-center">
                       <span>{m.vote_average}</span>
-                      <img src="/star.png" className="w-5 h-5" alt="" />
+                      <img src="/star.png" className="w-5 h-5" alt="..." />
                     </span>
                   </div>
                   <p>{m.overview}</p>

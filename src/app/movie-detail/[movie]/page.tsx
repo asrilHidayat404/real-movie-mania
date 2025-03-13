@@ -1,5 +1,4 @@
 import getMovieOfGenre from "@/app/api/movieOfGenre";
-import getSearchMovie from "@/app/api/searchMovie";
 import MovieDetailButton from "@/components/MovieDetailButton";
 import { formatRuntime } from "@/utils/formatRuntime";
 import parseReleaseDate from "@/utils/releaseData";
@@ -29,8 +28,8 @@ const page = async ({ params }: { params: Promise<{ movie: string }> }) => {
 
   console.log(
     creditsData.crew
-      .filter(({ job }) => job === "Director")
-      .map((crew: any) => crew.name)
+      .filter(({ job }: { job: string }) => job === "Director")
+      .map((crew: { name: string[] }) => crew.name)
       .join(", ")
   );
 
@@ -53,7 +52,7 @@ const page = async ({ params }: { params: Promise<{ movie: string }> }) => {
         <div className="w-full md:w-1/4">
           <img
             src={`https://image.tmdb.org/t/p/original${movie.poster_path}`}
-            alt=""
+            alt="..."
             className="w-full rounded-lg shadow-lg"
           />
         </div>
@@ -85,14 +84,14 @@ const page = async ({ params }: { params: Promise<{ movie: string }> }) => {
             Starring:{" "}
             {creditsData.cast
               .slice(0, 3)
-              .map((cast: any) => cast.name)
+              .map((cast: { name: string }) => cast.name)
               .join(", ") || "No cast available"}
           </p>
           <p className="text-gray-400">
             Directed by:{" "}
             {creditsData.crew
-              .filter(({ job }) => job === "Director")
-              .map((crew: any) => crew.name)
+              .filter(({ job }: { job: string }) => job === "Director")
+              .map((crew: { name: string }) => crew.name)
               .join(", ") || "No director available"}
           </p>
 

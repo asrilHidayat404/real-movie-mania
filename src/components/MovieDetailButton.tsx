@@ -1,7 +1,7 @@
 "use client";
 import { X } from "@phosphor-icons/react/dist/ssr";
 import React, { useEffect, useState } from "react";
-import toast, { ToastBar, Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 
 const MovieDetailButton = ({ title, id }: { title: string; id: string }) => {
   const [trailers, setTrailers] = useState<[]>([]);
@@ -14,7 +14,7 @@ const MovieDetailButton = ({ title, id }: { title: string; id: string }) => {
   };
   useEffect(() => {
     const trailer = trailers.filter(
-      (item) =>
+      (item: { type: string; name: string }) =>
         item.type === "Trailer" &&
         (item.name.includes("Teaser Trailer") ||
           item.name.includes("Official Trailer") ||

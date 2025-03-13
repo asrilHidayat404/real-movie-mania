@@ -143,29 +143,12 @@ const MobileNav = ({
         <button onClick={() => setShowGenres((prev) => !prev)}>Genres:</button>
         {showGenres && (
           <ul className="ml-3 space-y-2 mt-2">
-            {genres.map((genre) => (
-              <li>{genre}</li>
+            {genres.map((genre, i) => (
+              <li key={i}>{genre}</li>
             ))}
           </ul>
         )}
       </div>
-
-      <div>ok</div>
-
-      {/* Search Input */}
-      {/* <div className="relative lg:flex hidden justify-end gap-4 flex-1 ml-10 ">
-        <input
-          type="text"
-          placeholder="Cari film..."
-          className="px-4 py-2 w-80 bg-gray-800 text-white rounded-full focus:outline-none shadow-sm shadow-white"
-        />
-        <button>
-          <MagnifyingGlass
-            className="absolute top-1/2 -right-3 transform -translate-y-1/2"
-            weight="bold"
-          />
-        </button>
-      </div> */}
     </div>
   );
 };

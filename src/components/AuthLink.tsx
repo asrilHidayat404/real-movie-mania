@@ -1,9 +1,5 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { Session } from "inspector/promises";
-import { getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
 
 const AuthLink = () => {
   const { data: session } = useSession();
