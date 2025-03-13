@@ -11,9 +11,12 @@
   "dependencies": {
     "@phosphor-icons/react": "^2.1.7",
     "next": "15.1.2",
+    "next-auth": "^4.24.11",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-hot-toast": "^2.5.2",
     "react-infinite-scroll-component": "^6.1.0",
+    "react-loading-indicators": "^1.0.0",
     "swiper": "^11.1.15"
   },
   "devDependencies": {

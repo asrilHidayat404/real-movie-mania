@@ -2,6 +2,8 @@
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
+import Loading from "./Loading";
+import parseReleaseDate from "@/utils/releaseData";
 
 // Define a type for a single movie
 type Movie = {
@@ -20,27 +22,40 @@ type Movies = {
 const MovieLoader = ({
   movies,
   pageName,
+  query,
 }: {
   movies: Movies;
   pageName: string;
+  query?: string;
 }) => {
   const [movie, setMovies] = useState<Movie[]>(movies.results);
   const [page, setPage] = useState(2); // Mulai dari halaman 2
   const [hasMore, setHasMore] = useState(true);
-  console.log({ movie });
+  const [url, setUrl] = useState("");
+
+  useEffect(() => {
+    let newUrl = "";
+    if (pageName === "recommended") {
+      newUrl = `${process.env.NEXT_PUBLIC_TMDB_BASE_URL}/discover/movie?language=en-US&page=${page}&api_key=43a84b44b9e916d44359dd17e355faf5`;
+    } else if (pageName === "trending") {
+      newUrl = `${process.env.NEXT_PUBLIC_TMDB_BASE_URL}/trending/movie/day?language=en-US&page=${page}&api_key=43a84b44b9e916d44359dd17e355faf5`;
+    } else if (pageName === "search") {
+      newUrl = `${process.env.NEXT_PUBLIC_TMDB_BASE_URL}/search/movie?query=${query}&page=${page}&api_key=43a84b44b9e916d44359dd17e355faf5`;
+    }
+    setUrl(newUrl);
+  }, [pageName, page, query]);
+  // const url = `${process.env.NEXT_PUBLIC_TMDB_BASE_URL}${
+  //   pageName == "recommended"
+  //     ? `/discover/movie?language=en-US&page=${page}&api_key=43a84b44b9e916d44359dd17e355faf5`
+  //     : `/${pageName}/movie/day?language=en-US&page=${page}&api_key=43a84b44b9e916d44359dd17e355faf5`
+  // }`;
 
   const fetchMoreMovies = async () => {
-    const res = await fetch(
-      `https://api.themoviedb.org/3${
-        pageName == "recommended"
-          ? `/discover/movie?language=en-US&page=${page}&api_key=43a84b44b9e916d44359dd17e355faf5`
-          : `/${pageName}/movie/day?language=en-US&page=${page}&api_key=43a84b44b9e916d44359dd17e355faf5`
-      }`
-    );
+    if (!url) return;
+    const res = await fetch(url);
     const newMovies = await res.json();
-    console.log({ newMovies });
 
-    if (newMovies.length === 0) {
+    if (newMovies.results.length === 0) {
       setHasMore(false);
     } else {
       setMovies((prev: Movie[]) => {
@@ -56,17 +71,15 @@ const MovieLoader = ({
       setPage((prev) => prev + 1);
     }
   };
-  useEffect(() => {
-    console.log({ movie });
-  }, [movie]);
+
   return (
     <InfiniteScroll
       dataLength={movie.length}
       next={fetchMoreMovies}
       hasMore={hasMore}
-      loader={<h4>Loading...</h4>}
+      loader={<Loading />}
     >
-      <div className="w-full flex flex-wrap gap-10 justify-center mt-10">
+      <div className="w-full grid lg:grid-cols-6 md:grid-cols-6 grid-cols-3 gap-4">
         {movie &&
           movie.length &&
           movie.map((m: Movie) => {
@@ -75,7 +88,7 @@ const MovieLoader = ({
             return (
               <div
                 key={m.id}
-                className="relative w-40 lg:h-64 h-32 w-fit rounded-lg overflow-hidden shadow-lg mx-auto mx-1"
+                className="relative h-660 rounded-lg overflow-hidden shadow-lg mx-auto mx-1"
               >
                 <img
                   src={`https://image.tmdb.org/t/p/original${m.poster_path}`}
@@ -92,13 +105,11 @@ const MovieLoader = ({
                   HD
                 </div>
                 <Link
-                  href={`/movie-detail/${m.id}`}
-                  className="leading-0 absolute bottom-0 left-0 right-0 text-center text-white text-sm"
+                  href={`/movie-detail/${m?.id}`}
+                  className="absolute bottom-0 left-0 right-0 text-center text-white text-sm bg-gray-700 bg-opacity-80 p-1"
                 >
-                  <span className="block lg:text-lg text-[8px]">{m.title}</span>
-                  <span className="lg:text-lg sm:text-[8px]">
-                    {m.release_date}
-                  </span>
+                  <span className="block">{m?.title}</span>
+                  <span>({parseReleaseDate(m?.release_date).year})</span>
                 </Link>
               </div>
             );

@@ -1,4 +1,6 @@
+import getMovieOfGenre from "@/app/api/movieOfGenre";
 import getSearchMovie from "@/app/api/searchMovie";
+import MovieDetailButton from "@/components/MovieDetailButton";
 import { formatRuntime } from "@/utils/formatRuntime";
 import parseReleaseDate from "@/utils/releaseData";
 import Link from "next/link";
@@ -8,7 +10,7 @@ const page = async ({ params }: { params: Promise<{ movie: string }> }) => {
   const movieId = (await params).movie;
 
   const response = await fetch(
-    `${process.env.TMDB_BASE_URL}/movie/${movieId}?language=en-US&api_key=${process.env.TMDB_API_KEY}`,
+    `${process.env.NEXT_PUBLIC_TMDB_BASE_URL}/movie/${movieId}?language=en-US&api_key=${process.env.TMDB_API_KEY}`,
     {
       method: "GET",
       headers: {
@@ -18,8 +20,19 @@ const page = async ({ params }: { params: Promise<{ movie: string }> }) => {
     }
   );
   const movie = await response.json();
-  console.log(movie);
   const releaseDate = parseReleaseDate(movie.release_date);
+  const credits = await fetch(
+    `https://api.themoviedb.org/3/movie/${movie.id}/credits?api_key=43a84b44b9e916d44359dd17e355faf5`
+  );
+  const creditsData = await credits.json();
+  console.log(creditsData);
+
+  console.log(
+    creditsData.crew
+      .filter(({ job }) => job === "Director")
+      .map((crew: any) => crew.name)
+      .join(", ")
+  );
 
   return (
     <div
@@ -40,16 +53,21 @@ const page = async ({ params }: { params: Promise<{ movie: string }> }) => {
         <div className="w-full md:w-1/4">
           <img
             src={`https://image.tmdb.org/t/p/original${movie.poster_path}`}
-            alt="Frozen Movie Poster"
+            alt=""
             className="w-full rounded-lg shadow-lg"
           />
         </div>
 
         {/* Movie Info */}
-        <div className="md:ml-8 w-full md:w-3/4">
+        <div className="md:ml-8 w-full md:w-3/4 space-y-3">
           <h1 className="text-3xl font-bold">{movie.original_title}</h1>
           <p className="text-gray-300">
             {releaseDate.year} • {formatRuntime(movie.runtime)}
+          </p>
+          <p className="text-gray-300 text-sm italic">
+            {movie.genres
+              .map((genre: { id: string; name: string }) => genre.name)
+              .join(", ")}
           </p>
 
           {/* Ratings */}
@@ -64,39 +82,46 @@ const page = async ({ params }: { params: Promise<{ movie: string }> }) => {
           {/* Movie Description */}
           <p className="mt-4 text-gray-200">{movie.overview}</p>
           <p className="mt-2 text-gray-400">
-            Starring: Kristen Bell, Idina Menzel, Jonathan Groff
+            Starring:{" "}
+            {creditsData.cast
+              .slice(0, 3)
+              .map((cast: any) => cast.name)
+              .join(", ") || "No cast available"}
           </p>
-          <p className="text-gray-400">Directed by: Chris Buck, Jennifer Lee</p>
+          <p className="text-gray-400">
+            Directed by:{" "}
+            {creditsData.crew
+              .filter(({ job }) => job === "Director")
+              .map((crew: any) => crew.name)
+              .join(", ") || "No director available"}
+          </p>
 
           {/* Buttons */}
           <div className="mt-6 flex flex-wrap gap-2">
             <button className="bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded">
-              Resume
+              Add to Watchlist
             </button>
+            <MovieDetailButton title="Watch Trailer" id={movie.id} />
             <button className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded">
-              Remove from Watchlist
-            </button>
-            <button className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded">
-              Watch Trailer
-            </button>
-            <button className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded">
-              More Ways to Watch
+              Cast
             </button>
           </div>
         </div>
       </div>
 
       {/* Customers Also Watched Section */}
-      <div className="p-10">
-        <CustomersAlsoWatched />
+      <div className="p-2">
+        <CustomersAlsoWatched genre={movie.genres[0].id} />
       </div>
       {/* <pre>{JSON.stringify(movie, undefined, 2)}</pre> */}
     </div>
   );
 };
 
-const CustomersAlsoWatched = async () => {
-  const trending_movie = await getSearchMovie("sonic");
+const CustomersAlsoWatched = async ({ genre }: { genre: string }) => {
+  const trending_movie = await getMovieOfGenre(genre);
+  console.log(trending_movie);
+
   type results = {
     id: string;
     title: string;
@@ -106,13 +131,16 @@ const CustomersAlsoWatched = async () => {
   };
 
   return (
-    <div className="p-6 md:p-12 z-10 relative bg-gray-800">
-      <h2 className="text-2xl font-semibold mb-4">Customers Also Watched</h2>
-      <div className="flex flex-wrap gap-4 ">
+    // make the background glass effect
+    <div className="p-6 md:p-12 relative bg-gray-800 bg-opacity-50 rounded-lg">
+      <h2 className="text-2xl font-semibold mb-4 text-gray-100">
+        Customers Also Watched
+      </h2>
+      <div className="grid lg:grid-cols-6 md:grid-cols-5 grid-cols-2 gap-y-8">
         {trending_movie.results.map((m: results, index: number) => (
           <div
             key={index}
-            className="relative w-40 lg:h-64 h-44 w-fit bg-black rounded-lg overflow-hidden shadow-lg mx-auto mx-1"
+            className="relative w-fit lg:h-64  bg-black rounded-lg overflow-hidden shadow-lg mx-auto h-40"
           >
             {m?.poster_path && (
               <img
@@ -131,10 +159,10 @@ const CustomersAlsoWatched = async () => {
             </div>
             <Link
               href={`/movie-detail/${m?.id}`}
-              className="absolute bottom-2 left-0 right-0 text-center text-white text-sm"
+              className="absolute bottom-0 left-0 right-0 text-center text-white text-[10px] bg-gray-700 bg-opacity-80 p-1"
             >
               <span className="block">{m?.title}</span>
-              <span>{m?.release_date}</span>
+              <span>({parseReleaseDate(m?.release_date).year})</span>
             </Link>
           </div>
         ))}
