@@ -1,4 +1,5 @@
 import getMovieOfGenre from "@/app/api/movieOfGenre";
+import CollectionButton from "@/components/CollectionButton";
 import MovieDetailButton from "@/components/MovieDetailButton";
 import { formatRuntime } from "@/utils/formatRuntime";
 import parseReleaseDate from "@/utils/releaseData";
@@ -24,14 +25,6 @@ const page = async ({ params }: { params: Promise<{ movie: string }> }) => {
     `https://api.themoviedb.org/3/movie/${movie.id}/credits?api_key=43a84b44b9e916d44359dd17e355faf5`
   );
   const creditsData = await credits.json();
-  console.log(creditsData);
-
-  console.log(
-    creditsData.crew
-      .filter(({ job }: { job: string }) => job === "Director")
-      .map((crew: { name: string[] }) => crew.name)
-      .join(", ")
-  );
 
   return (
     <div
@@ -97,9 +90,7 @@ const page = async ({ params }: { params: Promise<{ movie: string }> }) => {
 
           {/* Buttons */}
           <div className="mt-6 flex flex-wrap gap-2">
-            <button className="bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded">
-              Add to Watchlist
-            </button>
+            <CollectionButton movieId={movie.id} />
             <MovieDetailButton title="Watch Trailer" id={movie.id} />
             <button className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded">
               Cast
@@ -110,7 +101,7 @@ const page = async ({ params }: { params: Promise<{ movie: string }> }) => {
 
       {/* Customers Also Watched Section */}
       <div className="p-2">
-        <CustomersAlsoWatched genre={movie.genres[0].id} />
+        {/* <CustomersAlsoWatched genre={movie.genres[0].id} /> */}
       </div>
       {/* <pre>{JSON.stringify(movie, undefined, 2)}</pre> */}
     </div>
@@ -119,7 +110,6 @@ const page = async ({ params }: { params: Promise<{ movie: string }> }) => {
 
 const CustomersAlsoWatched = async ({ genre }: { genre: string }) => {
   const trending_movie = await getMovieOfGenre(genre);
-  console.log(trending_movie);
 
   type results = {
     id: string;

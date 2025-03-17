@@ -83,8 +83,6 @@ const MovieLoader = ({
         {movie &&
           movie.length &&
           movie.map((m: Movie) => {
-            console.log(m);
-
             return (
               <div
                 key={m.id}
