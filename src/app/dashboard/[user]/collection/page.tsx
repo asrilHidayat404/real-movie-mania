@@ -1,24 +1,41 @@
-import React from "react";
+import Header from "@/components/Header";
+import authSession from "@/libs/authSession";
+import { prisma } from "@/libs/prisma";
+import Image from "next/image";
+import Link from "next/link";
 
-const page = () => {
-  return (
-    <main className="mt-20">
-      <h1 className="text-4xl font-bold text-center">Collection</h1>
-      {/* make card for listing movie in wishlist */}
-      <div className="container mx-auto mt-10">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-gray-100 p-4 rounded-md">
-            <img
-              src="https://via.placeholder.com/300"
-              alt="..."
-              className="rounded-md"
-            />
-            <h3 className="text-xl font-bold mt-2">Title</h3>
-          </div>
-        </div>
-      </div>
-    </main>
-  );
+const Page = async () => {
+    const user = await authSession();
+    if(!user?.email){
+      return
+    }
+    const collection = await prisma.collection.findMany({
+        where: { user_email: user.email },
+    });
+
+    return (
+        <section className="mt-4 px-4 w-full">
+            <Header title={"My Collection"} />
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {collection.map((collect, index) => {
+                    return (
+                        <Link key={index} href={`/movie/${collect.anime_mal_id}`} className="relative">
+                            <Image
+                                src={collect.anime_image}
+                                alt={collect.anime_image}
+                                width={350}
+                                height={350}
+                                className="w-full"
+                            />
+                            <div className="absolute flex items-center justify-center bottom-0 w-full bg-color-accent h-16">
+                                <h5 className="text-xl text-center">{collect.anime_title}</h5>
+                            </div>
+                        </Link>
+                    );
+                })}
+            </div>
+        </section>
+    );
 };
 
-export default page;
+export default Page;

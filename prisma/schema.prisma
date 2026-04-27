@@ -1,0 +1,32 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model Collection {
+  id              Int @id @default(autoincrement())
+  anime_mal_id    String
+  user_email      String
+  anime_image     String?
+  anime_title     String?
+
+  @@unique([user_email, anime_mal_id])
+}
+
+model Comment {
+  id              Int @id @default(autoincrement())
+  anime_mal_id    String
+  user_email      String
+  comment         String
+  username        String   
+  anime_title     String   
+}

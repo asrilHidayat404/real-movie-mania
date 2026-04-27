@@ -6,20 +6,23 @@ import toast from "react-hot-toast";
 
 interface Data {
   movieId: string;
+  title: string;
+  userEmail: string;
+  movieImage: string
 }
 
-const CollectionButton = ({ movieId }: Data) => {
-  const { data: session } = useSession();
-  const user = session?.user?.name;
-  console.log({ user, movieId });
+const CollectionButton = ({ movieId, title, userEmail, movieImage }: Data) => {
 
   const handleCollection = async () => {
+    if(!userEmail) {
+      return toast.error("Please sign in first..")
+    }
     const response = await fetch("/api/v1/collection", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ user, movieId }),
+      body: JSON.stringify({ movieId, title, userEmail, movieImage }),
     });
     const data = await response.json();
     console.log(data);
@@ -32,7 +35,7 @@ const CollectionButton = ({ movieId }: Data) => {
       onClick={handleCollection}
       className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded"
     >
-      CollectionButton
+      Add To Collection
     </button>
   );
 };

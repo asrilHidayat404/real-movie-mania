@@ -1,12 +1,16 @@
 import getMovieOfGenre from "@/app/api/movieOfGenre";
 import CollectionButton from "@/components/CollectionButton";
 import MovieDetailButton from "@/components/MovieDetailButton";
+import authSession from "@/libs/authSession";
 import { formatRuntime } from "@/utils/formatRuntime";
 import parseReleaseDate from "@/utils/releaseData";
+import { getSession } from "next-auth/react";
 import Link from "next/link";
 import React from "react";
 
 const page = async ({ params }: { params: Promise<{ movie: string }> }) => {
+  const session = await authSession();
+  const userEmail = await session?.email;
   const movieId = (await params).movie;
 
   const response = await fetch(
@@ -25,7 +29,6 @@ const page = async ({ params }: { params: Promise<{ movie: string }> }) => {
     `https://api.themoviedb.org/3/movie/${movie.id}/credits?api_key=43a84b44b9e916d44359dd17e355faf5`
   );
   const creditsData = await credits.json();
-
   return (
     <div
       className="relative bg-cover bg-center py-20"
@@ -90,7 +93,7 @@ const page = async ({ params }: { params: Promise<{ movie: string }> }) => {
 
           {/* Buttons */}
           <div className="mt-6 flex flex-wrap gap-2">
-            <CollectionButton movieId={movie.id} />
+            <CollectionButton movieId={movie.id} title={movie.title} userEmail={userEmail} movieImage={movie.poster_path} />
             <MovieDetailButton title="Watch Trailer" id={movie.id} />
             <button className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded">
               Cast
@@ -101,7 +104,7 @@ const page = async ({ params }: { params: Promise<{ movie: string }> }) => {
 
       {/* Customers Also Watched Section */}
       <div className="p-2">
-        {/* <CustomersAlsoWatched genre={movie.genres[0].id} /> */}
+        <CustomersAlsoWatched genre={movie.genres[0].id} />
       </div>
       {/* <pre>{JSON.stringify(movie, undefined, 2)}</pre> */}
     </div>
